@@ -34,7 +34,7 @@ Every time we build our workspace, we need to source the `setup.bash` file found
 gedit ~/.bashrc
 ```
 
-Type this command at the end of the file
+Add this command at the end of the file
 
 ```bash
 source ~/ros2_ws/src/install/local_setup.bash
@@ -44,4 +44,41 @@ Now you have a workspace and it'll be sourced every time you open a terminal!
 
 # 2. Creating a package
 
-In order to start working in your workspace, you need to create a package which will hold all of your code.
+In order to start working in your workspace, you need to create a package which will hold all of your code and files relating to a certain project(s). 
+
+All packages should be created in the `src` directory in your workspace so first change directory to it then we'll create the package
+
+```bash
+cd ~/ros2_ws/src
+```
+```bash
+ros2 pkg create --build-type ament_python <package_name>
+```
+If you know some dependencies you'll be needing beforehand, you can use the `--dependencies` flag and list your dependencies.
+
+```bash
+ros2 pkg create --build-type ament_python <package_name> --dependencies rclpy geometry_msgs
+```
+
+**Build the package**  - Be sure to go back to the workspace directory building running the build command.
+```bash
+cd ~/ros2_ws
+colcon build
+```
+Source the setup file by sourcing `.bashrc` edited before
+```bash
+source ~/.bashrc
+```
+
+This process of building and sourcing will be done everytime you add new files, nodes, code, etc to your package(s) so don't forget to do it. 
+
+**Running your package** - if you have a node inside your package you can now run it using.
+
+```bash
+ros2 run <package_name> <node_name>
+```
+
+
+
+
+
