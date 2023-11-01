@@ -7,7 +7,6 @@ Cheatsheet for all basic ROS2 Humble commands.
 <details>
 <summary>Table of contents</summary>
 
-
 -   [Creating a workspace](#creating-a-workspace)
 -   [Creating a package](#packages)
 -   [Adding new nodes](#new-nodes)
@@ -15,9 +14,8 @@ Cheatsheet for all basic ROS2 Humble commands.
 -   [Publishers and Subscribers](#pubsub)
 -   [Services](#srvcli)
 -   [Actions](#actions)
- </details>
+</details>
 
-<br>
 <br>
 
 <div id='creating-a-workspace'>
@@ -296,7 +294,93 @@ self.future = self.client.call_async(self.req) # makes an async request and retu
 
 You can then use `rclpy.spin_until_future_complete(self, self.future)` so that the node keeps spinning as long as the request didn't return a response yet.
 
+<br>
+<br>
 
 <div id="actions">
 
 # Actions
+
+[Docs](https://docs.ros.org/en/humble/Tutorials/Intermediate/Writing-an-Action-Server-Client/Py.html)
+
+Actions are similar to a service and client wherein there's a request and a response however actions involve a little more. Actions can have feedbacks and goals.
+
+Actions deal with `.action` files that look like this
+
+```python
+# Request
+---
+# Result
+---
+# Feedback
+```
+
+And so, to begin, we need to import our specific action files.
+
+```python
+from action_tutorials_interfaces.action import Fibonacci
+```
+
+### Action Servers
+
+**Creating a client** - in your node's constructor
+
+```python
+from rclpy.action import ActionServer
+
+self._action_server = ActionServer(self, Fibonacci, 'action_name', self.execute_callback)
+```
+
+Similar to before, the action server will take an `execute_callback` which is called to process accepted goals. This callback function can look like this
+
+```python
+def execute_callback(self, goal_handle):
+    self.get_logger().info('Executing goal...')
+
+    feedback_msg = Fibonacci.Feedback()
+    feedback_msg.partial_sequence = [0, 1]
+
+    for i in range(1, goal_handle.request.order):
+        feedback_msg.partial_sequence.append(....)
+        goal_handle.publish_feedback(feedback_msg)
+        time.sleep(1)
+
+    goal_handle.succeed()
+
+    result = Fibonacci.Result()
+    result.sequence = feedback_msg.partial_sequence
+    return result
+```
+
+As you can see, we can get form our feedback and publish it throughout the running of our request execution.
+
+### Action Clients
+
+**Creating a client** - in your node's constructor
+
+```python
+from rclpy.action import ActionClient
+
+self._action_client = ActionClient(self, Fibonacci, 'action_name')
+```
+
+How an action client works is a little complicated so I'll try to simplify it.
+
+-   In order to send our goal, first, we'll make sure there's a server by using `self._action_client.wait_for_server()` which runs until it return true
+-   Send the goal using `self._action_client.send_goal_async(goal_msg)` which returns a future object
+-   Add a callback to this future object using `future.add_done_callback()`
+-   In this callback we will check if the goal was accepted or rejected, when accepted, we will get a future object using `self._get_result_future = goal_handle.get_result_async()` which when done will return our result message.
+-   We can add a callback to run when this future is done `self._get_result_future.add_done_callback(self.get_result_callback)` which just prints out our `future.result().result` information
+
+I didn't want to fit all of the code here so [read the docs](https://docs.ros.org/en/humble/Tutorials/Intermediate/Writing-an-Action-Server-Client/Py.html#getting-a-result), it will make more sense.
+
+One more thing, we still didn't get our feedback. To do this, we will simply add a feedback callback function to our `send_goal_async()`
+
+```python
+self._send_goal_future = self._action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+```
+
+```python
+def feedback_callback(self,feedback_msg):
+  # feedback = feedback_msg.feedback
+```
