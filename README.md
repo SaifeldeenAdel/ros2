@@ -22,6 +22,8 @@ Cheatsheet for all basic ROS2 Humble commands.
 
 # 1. Creating a workspace
 
+[Docs](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html)
+
 </div>
 
 To work with ros2, you first needed to create a "workspace" which is just a directory suffixed by "\_ws" for good practice (such as "ros2_ws", "turtlesim_ws"). To begin, navigate to the location wherein you want your ros2 workspace to reside and run the following commands.
@@ -59,6 +61,8 @@ Now you have a workspace and it'll be sourced every time you open a terminal!
 <div id='packages'>
 
 # 2. Creating a package
+
+[Docs](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html)
 
 </div>
 In order to start working in your workspace, you need to create a package which will hold all of your code and files relating to a certain project(s).
@@ -106,6 +110,8 @@ ros2 run <package_name> <node_name>
 <div id='new-nodes'>
 
 # 3. Adding new nodes
+
+[Docs](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html#id2)
 
 After creating a packages, we want to write code for nodes and execute them. First, create your python file `example_node.py` inside the `/package_name/package_name` directory and start writing code.
 
@@ -192,6 +198,8 @@ ros2 topic pub --rate 1 /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2
 <div id='pubsub'>
 
 # 5. Publishers and Subscribers
+
+[Docs](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html#)
 
 Publishers publish messages onto topics while Subcribers subscribe to the topic to receive these messages.
 
